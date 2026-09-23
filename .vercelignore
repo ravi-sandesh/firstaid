@@ -1,0 +1,3 @@
+# Local-only dev server (Vercel serves this site as static files; Node can't listen on a port in serverless)
+server.js
+.git

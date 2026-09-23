@@ -125,6 +125,12 @@ let tempCommMedia = null;
 // ==========================================================================
 // Initialization & LocalStorage
 // ==========================================================================
+// Runs only in browsers. Guards keep this file import-safe in non-DOM
+// runtimes (e.g. if a host ever bundles it as a server module, import
+// must be a no-op instead of throwing "document is not defined").
+const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+
+if (isBrowser) {
 document.addEventListener("DOMContentLoaded", () => {
   initStorage();
   renderFounderPosts();
@@ -136,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupModals();
   setupJoinForm();
 });
+}
 
 function safeParse(raw, fallback) {
   try {
@@ -292,7 +299,7 @@ function renderCommunityPosts() {
 // ==========================================================================
 // Community Filter & Likes
 // ==========================================================================
-const filterGroup = document.getElementById("communityFilterGroup");
+const filterGroup = isBrowser ? document.getElementById("communityFilterGroup") : null;
 if (filterGroup) {
   filterGroup.addEventListener("click", (e) => {
     const btn = e.target.closest(".filter-btn");
@@ -718,6 +725,7 @@ function setupModals() {
 }
 
 // Function to view full article / vlog modal
+if (typeof window !== "undefined") {
 window.openArticleModal = function(postId) {
   const post = founderPosts.find(p => p.id === postId);
   if (!post) return;
@@ -761,6 +769,7 @@ window.openArticleModal = function(postId) {
 
   modal.classList.add("active");
 };
+}
 
 // ==========================================================================
 // Join The Club Form & Digital Pass Generator
