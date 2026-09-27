@@ -107,6 +107,28 @@ const DEFAULT_COMMUNITY_POSTS = [
   }
 ];
 
+// --- Default Founder Profile (editable via admin.html) ---
+const DEFAULT_FOUNDER_PROFILE = {
+  name: "Diyavasu Gubbi Ravi Sandesh",
+  role: "Club Founder & President",
+  tagline: "High School Student \u2022 Community Health Advocate \u2022 First Aid Educator",
+  quote: "I started this club because nobody should feel helpless when an accident happens at school or at home. If we can teach every high schooler CPR, AED, and bleeding control, our entire generation becomes a safety net.",
+  photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+  avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80"
+};
+
+function getFounderProfile() {
+  if (typeof localStorage === "undefined") return { ...DEFAULT_FOUNDER_PROFILE };
+  try {
+    const raw = localStorage.getItem("pulse_founder_profile");
+    if (!raw) return { ...DEFAULT_FOUNDER_PROFILE };
+    const parsed = JSON.parse(raw);
+    return { ...DEFAULT_FOUNDER_PROFILE, ...parsed };
+  } catch {
+    return { ...DEFAULT_FOUNDER_PROFILE };
+  }
+}
+
 // --- State Management ---
 let founderPosts = [];
 let communityPosts = [];
@@ -133,6 +155,7 @@ const isBrowser = typeof window !== "undefined" && typeof document !== "undefine
 if (isBrowser) {
 document.addEventListener("DOMContentLoaded", () => {
   initStorage();
+  renderFounderProfile();
   renderFounderPosts();
   renderCommunityPosts();
   setupNavigation();
@@ -181,6 +204,28 @@ function saveStorage() {
 }
 
 // ==========================================================================
+// Rendering: Founder Profile (managed via admin.html)
+// ==========================================================================
+function renderFounderProfile() {
+  const profile = getFounderProfile();
+  const photoEl = document.getElementById("founderPhoto");
+  if (photoEl) {
+    photoEl.src = profile.photo;
+    photoEl.alt = profile.name;
+  }
+  const nameEl = document.getElementById("founderName");
+  if (nameEl) nameEl.textContent = profile.name;
+  const roleEl = document.getElementById("founderRole");
+  if (roleEl) roleEl.textContent = profile.role;
+  const taglineEl = document.getElementById("founderTagline");
+  if (taglineEl) taglineEl.textContent = profile.tagline;
+  const quoteEl = document.getElementById("founderQuote");
+  if (quoteEl) quoteEl.textContent = '"' + profile.quote.replace(/^"|"$/g, "") + '"';
+  const footerNameEl = document.getElementById("footerFounderName");
+  if (footerNameEl) footerNameEl.textContent = profile.name;
+}
+
+// ==========================================================================
 // Rendering: Diyavasu's Corner Posts
 // ==========================================================================
 function renderFounderPosts() {
@@ -217,7 +262,7 @@ function renderFounderPosts() {
         <p class="post-excerpt">${escapeHtml(post.excerpt)}</p>
         <div class="post-footer">
           <div class="post-author">
-            <img src="${post.authorAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80'}" alt="${escapeHtml(post.author)}" class="author-mini-avatar">
+            <img src="${post.authorAvatar || getFounderProfile().avatar}" alt="${escapeHtml(post.author)}" class="author-mini-avatar">
             <span>${escapeHtml(post.author)}</span>
           </div>
           <button class="post-read-btn" onclick="openArticleModal('${post.id}')">
@@ -579,6 +624,7 @@ function setupModals() {
       const content = document.getElementById("founderPostContent").value.trim();
       const videoUrl = document.getElementById("founderVideoUrl").value.trim();
 
+      const profile = getFounderProfile();
       const newPost = {
         id: "f-" + Date.now(),
         type: type,
@@ -586,8 +632,8 @@ function setupModals() {
         category: tag,
         date: "Today",
         readTime: "3 min read",
-        author: "Diyavasu Gubbi Ravi Sandesh",
-        authorAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
+        author: profile.name,
+        authorAvatar: profile.avatar,
         image: tempFounderPhoto || "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
         videoUrl: videoUrl || "",
         excerpt: content.slice(0, 130) + "...",

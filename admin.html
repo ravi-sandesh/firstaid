@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Update Diyavasu Details | Pulse Point First Aid Club</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .admin-wrap { max-width: 760px; margin: 2.5rem auto; padding: 0 1.5rem; }
+    .admin-card { background: white; border-radius: 20px; box-shadow: var(--card-shadow); padding: 2rem; border: 1px solid var(--glass-border); }
+    .admin-preview-row { display: flex; gap: 1.25rem; align-items: center; margin: 1rem 0 1.5rem; }
+    .admin-preview-row img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 4px solid var(--secondary); }
+    .admin-hint { font-size: 0.82rem; color: var(--slate-500); margin-top: 0.5rem; }
+    .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.5rem; }
+    #adminPanel { display: none; }
+    #adminPanel.unlocked { display: block; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon-box">+</div>
+        <div class="brand-text">
+          <span class="brand-name">PULSE POINT</span>
+          <span class="brand-sub">Admin &bull; Diyavasu Profile</span>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-secondary btn-sm">← View Live Site</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-wrap">
+    <div class="section-header" style="text-align:left; margin-bottom:1.5rem;">
+      <span class="section-subtitle">ADMIN SETTINGS</span>
+      <h2 class="section-title">Update Admin Details for Diyavasu</h2>
+      <p class="section-lead">Changes save in this browser (localStorage) and appear instantly on the homepage Founder section.</p>
+    </div>
+
+    <!-- Login gate -->
+    <div class="admin-card" id="loginCard">
+      <label class="form-label" for="adminPassword">Admin Password</label>
+      <input type="password" id="adminPassword" class="form-input" placeholder="Enter admin password">
+      <p class="admin-hint">Default password: <code>diyavasu123</code> — change it in <code>admin.js</code> (ADMIN_PASSWORD).</p>
+      <div class="admin-actions">
+        <button class="btn btn-primary btn-sm" id="unlockBtn">Unlock Admin Panel</button>
+      </div>
+      <p id="loginError" style="display:none; color:var(--primary); font-size:0.85rem; margin-top:0.75rem;">Incorrect password. Try again.</p>
+    </div>
+
+    <!-- Admin form -->
+    <div class="admin-card" id="adminPanel">
+      <div class="admin-preview-row">
+        <img id="adminPreview" src="" alt="Diyavasu preview">
+        <div>
+          <strong id="adminPreviewName" style="display:block; font-family:var(--font-heading);"></strong>
+          <span id="adminPreviewRole" class="badge badge-gold"></span>
+        </div>
+      </div>
+
+      <form id="adminForm">
+        <div class="form-group">
+          <label class="form-label" for="adminName">Full Name *</label>
+          <input type="text" id="adminName" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="adminRole">Role / Badge Title *</label>
+          <input type="text" id="adminRole" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="adminTagline">Tagline</label>
+          <input type="text" id="adminTagline" class="form-input" placeholder="High School Student • Community Health Advocate • First Aid Educator">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="adminQuote">Quote / Bio *</label>
+          <textarea id="adminQuote" class="form-textarea" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="adminPhotoUrl">Profile Photo URL</label>
+          <input type="url" id="adminPhotoUrl" class="form-input" placeholder="https://... or upload below">
+          <p class="admin-hint">Large banner photo (circle, 110px). You can paste an image link OR upload a file below.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Upload New Photo</label>
+          <div class="file-upload-dropzone" id="adminDropzone">
+            <p style="font-size:0.85rem; font-weight:700; color:var(--slate-800);">Click to upload a photo from your device</p>
+            <p style="font-size:0.75rem; color:var(--slate-500);">PNG, JPG, WebP — saved in browser storage</p>
+            <input type="file" id="adminPhotoFile" accept="image/*" style="display:none;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="adminAvatarUrl">Small Avatar URL (blog posts)</label>
+          <input type="url" id="adminAvatarUrl" class="form-input" placeholder="Defaults to same as photo">
+          <p class="admin-hint">Leave blank to reuse the profile photo for blog post avatars.</p>
+        </div>
+
+        <div class="admin-actions">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="resetAdminBtn">Reset to Default</button>
+          <a href="index.html#founder-corner" class="btn btn-teal btn-sm">View on Homepage</a>
+          <button type="button" class="btn btn-secondary btn-sm" id="lockBtn">Lock</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="admin.js"></script>
+</body>
+</html>
