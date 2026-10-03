@@ -6,8 +6,8 @@
   <title>Admin — Update Diyavasu Details | Pulse Point First Aid Club</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .admin-wrap { max-width: 760px; margin: 2.5rem auto; padding: 0 1.5rem; }
-    .admin-card { background: white; border-radius: 20px; box-shadow: var(--card-shadow); padding: 2rem; border: 1px solid var(--glass-border); }
+    .admin-wrap { max-width: 920px; margin: 2.5rem auto; padding: 0 1.5rem; }
+    .admin-card { background: white; border-radius: 20px; box-shadow: var(--card-shadow); padding: 2rem; border: 1px solid var(--glass-border); margin-bottom: 1.5rem; }
     .admin-preview-row { display: flex; gap: 1.25rem; align-items: center; margin: 1rem 0 1.5rem; }
     .admin-preview-row img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 4px solid var(--secondary); }
     .admin-hint { font-size: 0.82rem; color: var(--slate-500); margin-top: 0.5rem; }
@@ -104,6 +104,114 @@
           <button type="button" class="btn btn-secondary btn-sm" id="resetAdminBtn">Reset to Default</button>
           <a href="index.html#founder-corner" class="btn btn-teal btn-sm">View on Homepage</a>
           <button type="button" class="btn btn-secondary btn-sm" id="lockBtn">Lock</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Prospective Projects manager -->
+    <div class="admin-card" id="projectsAdminCard">
+      <span class="section-subtitle">ADMIN • PROSPECTIVE PROJECTS</span>
+      <h2 class="section-title" style="font-size:1.5rem; margin-bottom:0.25rem;">Manage Prospective Projects</h2>
+      <p class="admin-hint" style="margin-bottom:1.25rem;">Add, edit or delete cards shown in the homepage “Prospective Projects” section. Saved in this browser (localStorage key <code>pulse_projects</code>).</p>
+
+      <div id="projectsAdminList" class="admin-list"></div>
+
+      <form id="projectForm" style="margin-top:1.25rem; border-top:1px dashed var(--slate-200); padding-top:1.25rem;">
+        <input type="hidden" id="projectEditId" value="">
+        <h3 style="font-family:var(--font-heading); font-size:1.05rem; margin-bottom:0.75rem;" id="projectFormTitle">Add New Project</h3>
+        <div class="form-group">
+          <label class="form-label" for="projectTitle">Project Title *</label>
+          <input type="text" id="projectTitle" class="form-input" placeholder="e.g. Community CPR Drive" required>
+        </div>
+        <div class="form-group-grid">
+          <div class="form-group">
+            <label class="form-label" for="projectStatus">Status *</label>
+            <select id="projectStatus" class="form-select" required>
+              <option value="Upcoming">Upcoming</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Planned">Planned</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="projectDate">Date / Timeline</label>
+            <input type="text" id="projectDate" class="form-input" placeholder="e.g. Nov 2026">
+          </div>
+        </div>
+        <div class="form-group-grid">
+          <div class="form-group">
+            <label class="form-label" for="projectCategory">Category</label>
+            <input type="text" id="projectCategory" class="form-input" placeholder="e.g. CPR Training">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="projectImage">Image URL</label>
+            <input type="url" id="projectImage" class="form-input" placeholder="https://... (optional)">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="projectDesc">Description *</label>
+          <textarea id="projectDesc" class="form-textarea" rows="3" placeholder="What is this project about, goals, venue..." required></textarea>
+        </div>
+        <div class="admin-actions">
+          <button type="submit" class="btn btn-primary btn-sm" id="projectSaveBtn">Add Project</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="projectCancelEditBtn" style="display:none;">Cancel Edit</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="resetProjectsBtn">Reset to Default Projects</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Our Team manager -->
+    <div class="admin-card" id="teamAdminCard">
+      <span class="section-subtitle">ADMIN • OUR TEAM</span>
+      <h2 class="section-title" style="font-size:1.5rem; margin-bottom:0.25rem;">Manage Our Team</h2>
+      <p class="admin-hint" style="margin-bottom:1.25rem;">Add, edit or remove members shown in the homepage “Our Team” section. Saved in this browser (localStorage key <code>pulse_team</code>).</p>
+
+      <div id="teamAdminList" class="admin-list"></div>
+
+      <form id="teamForm" style="margin-top:1.25rem; border-top:1px dashed var(--slate-200); padding-top:1.25rem;">
+        <input type="hidden" id="teamEditId" value="">
+        <h3 style="font-family:var(--font-heading); font-size:1.05rem; margin-bottom:0.75rem;" id="teamFormTitle">Add Team Member</h3>
+        <div class="form-group-grid">
+          <div class="form-group">
+            <label class="form-label" for="teamName">Full Name *</label>
+            <input type="text" id="teamName" class="form-input" placeholder="e.g. Aarav Rao" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="teamRole">Role / Title *</label>
+            <input type="text" id="teamRole" class="form-input" placeholder="e.g. VP — Training" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="teamBio">Short Bio *</label>
+          <textarea id="teamBio" class="form-textarea" rows="3" placeholder="One or two lines about this member..." required></textarea>
+        </div>
+        <div class="form-group-grid">
+          <div class="form-group">
+            <label class="form-label" for="teamPhoto">Photo URL (optional)</label>
+            <input type="url" id="teamPhoto" class="form-input" placeholder="https://... leave blank for initials avatar">
+            <p class="admin-hint">Or upload below — saved in browser storage.</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="teamColor">Avatar Colour (no photo)</label>
+            <input type="color" id="teamColor" class="form-input" value="#0284C7" style="height:48px; padding:6px;">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Photo</label>
+          <div class="file-upload-dropzone" id="teamDropzone">
+            <p style="font-size:0.85rem; font-weight:700; color:var(--slate-800);">Click to upload a team photo</p>
+            <p style="font-size:0.75rem; color:var(--slate-500);">PNG, JPG, WebP</p>
+            <input type="file" id="teamPhotoFile" accept="image/*" style="display:none;">
+          </div>
+          <div class="preview-container" id="teamPreviewContainer">
+            <img id="teamPreviewImg" src="" alt="Team preview">
+            <button type="button" class="remove-media-btn" id="removeTeamMediaBtn">&times;</button>
+          </div>
+        </div>
+        <div class="admin-actions">
+          <button type="submit" class="btn btn-primary btn-sm" id="teamSaveBtn">Add Member</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="teamCancelEditBtn" style="display:none;">Cancel Edit</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="resetTeamBtn">Reset to Default Team</button>
         </div>
       </form>
     </div>

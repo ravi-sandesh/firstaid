@@ -104,6 +104,76 @@ const DEFAULT_COMMUNITY_POSTS = [
     likes: 35,
     liked: false,
     date: "1 week ago"
+  },
+  {
+    id: "c-5",
+    author: "Ananya Sharma",
+    school: "Delhi Public School, New Delhi, India",
+    avatarBg: "#FB5607",
+    category: "drills",
+    categoryLabel: "Training Drills",
+    title: "Weekend CPR camp: trained 60 juniors on compression depth",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+    text: "Grade 11 chapter here! We borrowed 6 mannequins from our local clinic and ran 30-min rotations. Big win: everyone can now call 112, start 110 BPM compressions, and send a runner for the AED. Next: canteen staff drill.",
+    likes: 52,
+    liked: false,
+    date: "3 days ago"
+  },
+  {
+    id: "c-6",
+    author: "Oliver Bennett",
+    school: "Manchester Grammar School, UK",
+    avatarBg: "#0284C7",
+    category: "certifications",
+    categoryLabel: "Certifications",
+    title: "12 of us earned St John Ambulance Young First Aider awards!",
+    image: "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=800&q=80",
+    text: "Passed our assessment on recovery position, choking (back blows + abdominal thrusts), and calling 999 with clear location info. Our evidence folders are ready for DofE volunteering hours too!",
+    likes: 47,
+    liked: false,
+    date: "5 days ago"
+  },
+  {
+    id: "c-7",
+    author: "Brian Otieno",
+    school: "Nairobi High School, Kenya",
+    avatarBg: "#059669",
+    category: "drills",
+    categoryLabel: "Training Drills",
+    title: "Built 40 matatu first-aid pouches with our stop-the-bleed team",
+    image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=800&q=80",
+    text: "Fundraised 8,000 KES, packed gauze, gloves, and emergency cards (999 / 112) for bus drivers near our school. Practiced direct pressure and how NOT to remove an embedded object. Drivers loved it!",
+    likes: 63,
+    liked: false,
+    date: "1 week ago"
+  },
+  {
+    id: "c-8",
+    author: "Yuki Tanaka",
+    school: "Shibuya High School, Tokyo, Japan",
+    avatarBg: "#E63946",
+    category: "vlogs",
+    categoryLabel: "Student Vlogs",
+    title: "Vlog: earthquake go-bag + triangle bandage arm sling in 90 seconds",
+    image: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800&q=80",
+    text: "Filmed our disaster-drill prep: whistle, water, meds list, and a sling demo for sprains. In Japan we call 119 for fire/ambulance. Full vlog shows the cool ceiling-hook elevation trick our nurse taught us!",
+    likes: 38,
+    liked: false,
+    date: "1 week ago"
+  },
+  {
+    id: "c-9",
+    author: "Mariana Silva",
+    school: "Colegio Santa Cruz, Sao Paulo, Brazil",
+    avatarBg: "#7C3AED",
+    category: "tips",
+    categoryLabel: "First Aid Tips",
+    title: "Sideline concussion checklist for school football (EN + PT)",
+    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80",
+    text: "After two collisions last month we made a 1-page card: headache, dizziness, vomiting, unequal pupils = sit them out + call SAMU 192. Laminated 25 copies for coaches. Quer jogar seguro? Cola na gente!",
+    likes: 44,
+    liked: false,
+    date: "2 weeks ago"
   }
 ];
 
@@ -116,6 +186,76 @@ const DEFAULT_FOUNDER_PROFILE = {
   photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
   avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80"
 };
+
+// --- Default Prospective / Upcoming Projects (editable via admin.html) ---
+const DEFAULT_PROJECTS = [
+  {
+    id: "p-1",
+    title: "Campus AED Map — Phase 2 Expansion",
+    status: "In Progress",
+    category: "Campus Safety",
+    date: "Oct 2026",
+    description: "Expand our AED audit to the sports complex and bus bays. Goal: QR-code maps on every classroom door so any student can reach an AED within 90 seconds.",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "p-2",
+    title: "Community CPR Drive: 500 Hands in a Day",
+    status: "Upcoming",
+    category: "CPR Training",
+    date: "Nov 2026",
+    description: "One-day open camp in the school gym with 20 mannequins. Target: train 500 students, parents and canteen staff in hands-only CPR at 110 BPM.",
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "p-3",
+    title: "Stop-the-Bleed Kit Fundraiser",
+    status: "Planned",
+    category: "First Aid Kits",
+    date: "Dec 2026",
+    description: "Raise funds for 50 classroom bleed-control pouches (gauze, gloves, tourniquet trainer, emergency card with 911 / 112). Assemble with student volunteers.",
+    image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=800&q=80"
+  }
+];
+
+// --- Default Our Team roster (editable via admin.html) ---
+const DEFAULT_TEAM = [
+  {
+    id: "t-1",
+    name: "Diyavasu Gubbi Ravi Sandesh",
+    role: "Founder & President",
+    bio: "Started Pulse Point so no student feels helpless in an emergency. Leads CPR bootcamps and AED mapping.",
+    photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+    bg: "#E63946"
+  },
+  {
+    id: "t-2",
+    name: "Aarav Rao",
+    role: "VP — Training & Drills",
+    bio: "Runs weekly mannequin practice, tracks compression scores and certifies new volunteers.",
+    photo: "",
+    bg: "#4361EE"
+  },
+  {
+    id: "t-3",
+    name: "Meera Shah",
+    role: "Media & Vlog Lead",
+    bio: "Films training vlogs, edits reels and keeps the Student Hub feed updated.",
+    photo: "",
+    bg: "#06D6A0"
+  },
+  {
+    id: "t-4",
+    name: "Kabir Nair",
+    role: "Outreach Coordinator",
+    bio: "Contacts schools, books venues and organises community CPR camps and kit drives.",
+    photo: "",
+    bg: "#F59E0B"
+  }
+];
+
+const PROJECTS_KEY = "pulse_projects";
+const TEAM_KEY = "pulse_team";
 
 function getFounderProfile() {
   if (typeof localStorage === "undefined") return { ...DEFAULT_FOUNDER_PROFILE };
@@ -132,6 +272,8 @@ function getFounderProfile() {
 // --- State Management ---
 let founderPosts = [];
 let communityPosts = [];
+let prospectiveProjects = [];
+let teamMembers = [];
 let registeredMember = null;
 let currentCommunityFilter = "all";
 
@@ -157,6 +299,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initStorage();
   renderFounderProfile();
   renderFounderPosts();
+  renderProjects();
+  renderTeam();
   renderCommunityPosts();
   setupNavigation();
   setupScenarios();
@@ -180,8 +324,49 @@ function initStorage() {
   const storedFounder = localStorage.getItem("pulse_founder_posts");
   founderPosts = storedFounder ? safeParse(storedFounder, DEFAULT_FOUNDER_POSTS) : [...DEFAULT_FOUNDER_POSTS];
 
+  const storedProj = localStorage.getItem(PROJECTS_KEY);
+  prospectiveProjects = storedProj ? safeParse(storedProj, DEFAULT_PROJECTS) : [...DEFAULT_PROJECTS];
+  // Merge in new default projects missing from returning visitors' storage
+  const existingProjIds = new Set(prospectiveProjects.map(p => p.id));
+  let projMerged = false;
+  DEFAULT_PROJECTS.forEach(def => {
+    if (!existingProjIds.has(def.id)) {
+      prospectiveProjects.push({ ...def });
+      projMerged = true;
+    }
+  });
+  if (projMerged || !storedProj) {
+    try { localStorage.setItem(PROJECTS_KEY, JSON.stringify(prospectiveProjects)); } catch {}
+  }
+
+  const storedTeam = localStorage.getItem(TEAM_KEY);
+  teamMembers = storedTeam ? safeParse(storedTeam, DEFAULT_TEAM) : [...DEFAULT_TEAM];
+  const existingTeamIds = new Set(teamMembers.map(p => p.id));
+  let teamMerged = false;
+  DEFAULT_TEAM.forEach(def => {
+    if (!existingTeamIds.has(def.id)) {
+      teamMembers.push({ ...def });
+      teamMerged = true;
+    }
+  });
+  if (teamMerged || !storedTeam) {
+    try { localStorage.setItem(TEAM_KEY, JSON.stringify(teamMembers)); } catch {}
+  }
+
   const storedComm = localStorage.getItem("pulse_community_posts");
   communityPosts = storedComm ? safeParse(storedComm, DEFAULT_COMMUNITY_POSTS) : [...DEFAULT_COMMUNITY_POSTS];
+  // Merge in any new default posts (e.g. new international users) missing from returning visitors' storage
+  const existingIds = new Set(communityPosts.map(p => p.id));
+  let merged = false;
+  DEFAULT_COMMUNITY_POSTS.forEach(def => {
+    if (!existingIds.has(def.id)) {
+      communityPosts.push({ ...def });
+      merged = true;
+    }
+  });
+  if (merged) {
+    try { localStorage.setItem("pulse_community_posts", JSON.stringify(communityPosts)); } catch {}
+  }
 
   const storedMember = localStorage.getItem("pulse_member_pass");
   if (storedMember) {
@@ -198,6 +383,8 @@ function initStorage() {
 function saveStorage() {
   localStorage.setItem("pulse_founder_posts", JSON.stringify(founderPosts));
   localStorage.setItem("pulse_community_posts", JSON.stringify(communityPosts));
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(prospectiveProjects));
+  localStorage.setItem(TEAM_KEY, JSON.stringify(teamMembers));
   if (registeredMember) {
     localStorage.setItem("pulse_member_pass", JSON.stringify(registeredMember));
   }
@@ -270,6 +457,94 @@ function renderFounderPosts() {
           </button>
         </div>
       </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ==========================================================================
+// Rendering: Prospective Projects (managed via admin.html)
+// ==========================================================================
+function renderProjects() {
+  const container = document.getElementById("projectsGrid");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (!prospectiveProjects || prospectiveProjects.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 1px dashed var(--slate-300);">
+        <p style="font-size: 1.05rem; color: var(--slate-600);">No upcoming projects yet — check back soon!</p>
+      </div>
+    `;
+    return;
+  }
+
+  prospectiveProjects.forEach(project => {
+    const card = document.createElement("article");
+    card.className = "project-card";
+
+    const statusClass = /progress/i.test(project.status || "") ? "badge-teal"
+      : /upcoming/i.test(project.status || "") ? "badge-primary"
+      : "badge-gold";
+
+    card.innerHTML = `
+      <div class="project-media">
+        ${project.image ? `<img src="${escapeHtml(project.image)}" alt="${escapeHtml(project.title)}" loading="lazy">` : `<div class="project-media-fallback">🛠️</div>`}
+        <span class="badge ${statusClass} project-status">${escapeHtml(project.status || "Planned")}</span>
+      </div>
+      <div class="project-body">
+        <div class="post-meta-row">
+          <span class="badge badge-blue">${escapeHtml(project.category || "Project")}</span>
+          <span>&bull;</span>
+          <span>${escapeHtml(project.date || "")}</span>
+        </div>
+        <h4 class="project-title">${escapeHtml(project.title)}</h4>
+        <p class="project-desc">${escapeHtml(project.description || "")}</p>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ==========================================================================
+// Rendering: Our Team (managed via admin.html)
+// ==========================================================================
+function getInitials(name) {
+  if (!name) return "?";
+  return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function renderTeam() {
+  const container = document.getElementById("teamGrid");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (!teamMembers || teamMembers.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 1px dashed var(--slate-300);">
+        <p style="font-size: 1.05rem; color: var(--slate-600);">Team introductions coming soon!</p>
+      </div>
+    `;
+    return;
+  }
+
+  teamMembers.forEach(member => {
+    const card = document.createElement("article");
+    card.className = "team-card";
+
+    const avatarHtml = member.photo
+      ? `<img src="${escapeHtml(member.photo)}" alt="${escapeHtml(member.name)}" class="team-photo" loading="lazy">`
+      : `<div class="team-photo team-photo-fallback" style="background:${escapeHtml(member.bg || "#0284C7")}">${getInitials(member.name)}</div>`;
+
+    card.innerHTML = `
+      ${avatarHtml}
+      <h4 class="team-name">${escapeHtml(member.name)}</h4>
+      <span class="badge badge-primary team-role">${escapeHtml(member.role || "Member")}</span>
+      <p class="team-bio">${escapeHtml(member.bio || "")}</p>
     `;
 
     container.appendChild(card);
@@ -879,10 +1154,16 @@ function setupJoinForm() {
         localStorage.removeItem("pulse_founder_posts");
         localStorage.removeItem("pulse_community_posts");
         localStorage.removeItem("pulse_member_pass");
+        localStorage.removeItem(PROJECTS_KEY);
+        localStorage.removeItem(TEAM_KEY);
         founderPosts = [...DEFAULT_FOUNDER_POSTS];
         communityPosts = [...DEFAULT_COMMUNITY_POSTS];
+        prospectiveProjects = [...DEFAULT_PROJECTS];
+        teamMembers = [...DEFAULT_TEAM];
         registeredMember = null;
         renderFounderPosts();
+        renderProjects();
+        renderTeam();
         renderCommunityPosts();
 
         // Reset Pass UI
