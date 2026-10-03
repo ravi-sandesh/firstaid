@@ -6,6 +6,88 @@ const ADMIN_PASSWORD = "diyavasu123";
 const PROFILE_KEY = "pulse_founder_profile";
 const PROJECTS_KEY = "pulse_projects";
 const TEAM_KEY = "pulse_team";
+const FOUNDER_POSTS_KEY = "pulse_founder_posts";
+const COMMUNITY_POSTS_KEY = "pulse_community_posts";
+
+const DEFAULT_FOUNDER_POSTS_ADMIN = [
+  {
+    id: "f-1",
+    type: "vlog",
+    title: "Hands-On CPR Bootcamp: Training 120 High Schoolers in One Week!",
+    category: "CPR Training",
+    date: "Sep 18, 2026",
+    readTime: "4 min watch",
+    author: "Diyavasu Gubbi Ravi Sandesh",
+    authorAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
+    videoUrl: "https://www.youtube.com/embed/M4ACYp75mjU",
+    excerpt: "Watch our club members set up 15 CPR mannequins in the gym. Here is how we taught high schoolers compression depth and recoil.",
+    content: "When we launched our First Aid Club, our number one objective was simple: no high schooler should graduate without knowing how to perform high-quality CPR.\n\nLast week, we partnered with local healthcare mentors and brought 15 training mannequins into the gymnasium. Over five days, 120 students cycled through 45-minute intensive practical drills.\n\nKey Lessons:\n1. Hands-only CPR requires pressing down at least 2 inches (5cm).\n2. Pushing to the beat of 'Stayin' Alive' (100-120 bpm) prevents fatigue while keeping blood flowing to the brain.\n3. Calling for an AED early is the single biggest predictor of survival."
+  },
+  {
+    id: "f-2",
+    type: "project",
+    title: "Campus AED Hunt: Mapping Every Defibrillator in Our High School",
+    category: "Campus Safety",
+    date: "Sep 10, 2026",
+    readTime: "3 min read",
+    author: "Diyavasu Gubbi Ravi Sandesh",
+    authorAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+    excerpt: "Did you know where your school's AED is? We mapped all 18 AED units across sports halls, cafeteria, and main lobbies.",
+    content: "An AED is useless if nobody knows where to find it in a crisis. Our club conducted a campus-wide audit. We found that while our school possessed 18 modern automated defibrillators, fewer than 15% of students could point to the nearest one.\n\nWe designed brightly colored emergency location posters, created a quick QR-code map for classroom doors, and tested emergency runner times. Today, any student can locate an AED within 90 seconds from any room on campus."
+  },
+  {
+    id: "f-3",
+    type: "blog",
+    title: "Why I Started The First Aid Club: High Schoolers as First Responders",
+    category: "Founder's Story",
+    date: "Aug 28, 2026",
+    readTime: "5 min read",
+    author: "Diyavasu Gubbi Ravi Sandesh",
+    authorAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
+    image: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
+    excerpt: "Teenagers are capable of immense leadership. When emergencies strike, panic is the enemy. First aid training is the antidote.",
+    content: "When medical crises occur in real life, doctors and ambulances aren't immediately present—bystanders are. As high schoolers, we spend most of our waking hours together: in classrooms, cafeteria lines, athletic practices, and bus rides.\n\nBy starting this First Aid Club, my goal is to transform bystander hesitation into proactive action. We want our club to be a welcoming community where anyone—regardless of whether they want to be a future doctor or an artist—gains the self-reliance and empathy needed to step forward and save a life."
+  }
+];
+
+const CATEGORY_LABELS_ADMIN = {
+  drills: "Training Drills",
+  certifications: "Certifications",
+  vlogs: "Student Vlogs",
+  tips: "First Aid Tips"
+};
+
+function loadFounderPosts() {
+  try {
+    const raw = localStorage.getItem(FOUNDER_POSTS_KEY);
+    if (!raw) return [...DEFAULT_FOUNDER_POSTS_ADMIN];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [...DEFAULT_FOUNDER_POSTS_ADMIN];
+  } catch {
+    return [...DEFAULT_FOUNDER_POSTS_ADMIN];
+  }
+}
+
+function saveFounderPosts(posts) {
+  localStorage.setItem(FOUNDER_POSTS_KEY, JSON.stringify(posts));
+}
+
+function loadCommunityPosts() {
+  try {
+    const raw = localStorage.getItem(COMMUNITY_POSTS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCommunityPosts(posts) {
+  localStorage.setItem(COMMUNITY_POSTS_KEY, JSON.stringify(posts));
+}
 
 const DEFAULT_PROJECTS_ADMIN = [
   {
@@ -173,10 +255,12 @@ document.addEventListener("DOMContentLoaded", () => {
     fillForm(loadProfile());
     renderProjectsAdmin();
     renderTeamAdmin();
-    const projCard = document.getElementById("projectsAdminCard");
-    if (projCard) projCard.style.display = "block";
-    const teamCard = document.getElementById("teamAdminCard");
-    if (teamCard) teamCard.style.display = "block";
+    renderPostsAdmin();
+    renderCommunityAdmin();
+    ["projectsAdminCard", "teamAdminCard", "postsAdminCard", "communityAdminCard"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "block";
+    });
   }
 
   // Auto-unlock if already unlocked this session
@@ -207,6 +291,10 @@ document.addEventListener("DOMContentLoaded", () => {
     panel.classList.remove("unlocked");
     loginCard.style.display = "block";
     passwordInput.value = "";
+    ["projectsAdminCard", "teamAdminCard", "postsAdminCard", "communityAdminCard"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
   });
 
   dropzone.addEventListener("click", () => fileInput.click());
@@ -524,10 +612,333 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTeamAdmin();
   });
 
+  // ---------------- Blogs / Vlogs / Projects CRUD ----------------
+  const postsListEl = document.getElementById("postsAdminList");
+  const postForm = document.getElementById("postForm");
+  const postEditId = document.getElementById("postEditId");
+  const postFormatInput = document.getElementById("postFormat");
+  const postCategoryInput = document.getElementById("postCategory");
+  const postTitleInput = document.getElementById("postTitle");
+  const postImageUrlInput = document.getElementById("postImageUrl");
+  const postVideoUrlInput = document.getElementById("postVideoUrl");
+  const postContentInput = document.getElementById("postContent");
+  const postFormTitle = document.getElementById("postFormTitle");
+  const postSaveBtn = document.getElementById("postSaveBtn");
+  const postCancelBtn = document.getElementById("postCancelEditBtn");
+  const postImageDropzone = document.getElementById("postImageDropzone");
+  const postImageFile = document.getElementById("postImageFile");
+  const postImagePreviewContainer = document.getElementById("postImagePreviewContainer");
+  const postImagePreviewImg = document.getElementById("postImagePreviewImg");
+  const removePostImageBtn = document.getElementById("removePostImageBtn");
+  const postVideoDropzone = document.getElementById("postVideoDropzone");
+  const postVideoFile = document.getElementById("postVideoFile");
+  const postVideoName = document.getElementById("postVideoName");
+  let tempPostImage = null;
+  let tempPostVideo = null;
+  let tempPostVideoName = "";
+
+  function renderPostsAdmin() {
+    if (!postsListEl) return;
+    const posts = loadFounderPosts();
+    if (posts.length === 0) {
+      postsListEl.innerHTML = `<p class="admin-hint">No posts yet. Add the first blog / vlog below.</p>`;
+      return;
+    }
+    const badge = (t) => t === "vlog" ? "🎥 Vlog" : t === "project" ? "🛠️ Project" : "📝 Blog";
+    postsListEl.innerHTML = posts.map(p => `
+      <div class="admin-list-item">
+        <div class="admin-list-info">
+          <strong>${escapeAdminHtml(p.title)} <span class="admin-list-meta">${badge(p.type)}${p.videoUrl ? " • 🎬 video" : ""}</span></strong>
+          <span class="admin-list-meta">${escapeAdminHtml(p.category || "")} • ${escapeAdminHtml(p.date || "")}</span>
+          <span class="admin-list-desc">${escapeAdminHtml((p.excerpt || p.content || "").slice(0, 120))}</span>
+        </div>
+        <div class="admin-list-actions">
+          <button type="button" class="btn btn-secondary btn-sm" data-post-edit="${p.id}">Edit</button>
+          <button type="button" class="btn btn-secondary btn-sm admin-danger" data-post-del="${p.id}">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function showPostImagePreview(src) {
+    if (!postImagePreviewImg || !postImagePreviewContainer) return;
+    postImagePreviewImg.src = src;
+    postImagePreviewContainer.style.display = "block";
+    if (postImageDropzone) postImageDropzone.style.display = "none";
+  }
+
+  function clearPostImagePreview() {
+    tempPostImage = null;
+    if (postImagePreviewImg) postImagePreviewImg.src = "";
+    if (postImagePreviewContainer) postImagePreviewContainer.style.display = "none";
+    if (postImageDropzone) postImageDropzone.style.display = "block";
+    if (postImageFile) postImageFile.value = "";
+  }
+
+  function showPostVideoName(name) {
+    if (!postVideoName) return;
+    if (name) {
+      postVideoName.textContent = "📹 Attached video: " + name + " (saved on publish)";
+      postVideoName.style.display = "block";
+    } else {
+      postVideoName.textContent = "";
+      postVideoName.style.display = "none";
+    }
+  }
+
+  function resetPostForm() {
+    if (postForm) postForm.reset();
+    if (postEditId) postEditId.value = "";
+    clearPostImagePreview();
+    tempPostVideo = null;
+    tempPostVideoName = "";
+    showPostVideoName("");
+    if (postVideoFile) postVideoFile.value = "";
+    if (postFormatInput) postFormatInput.value = "blog";
+    if (postFormTitle) postFormTitle.textContent = "Add New Blog / Vlog";
+    if (postSaveBtn) postSaveBtn.textContent = "Add Post";
+    if (postCancelBtn) postCancelBtn.style.display = "none";
+  }
+
+  if (postImageDropzone && postImageFile) {
+    postImageDropzone.addEventListener("click", () => postImageFile.click());
+    postImageFile.addEventListener("change", () => {
+      const file = postImageFile.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        tempPostImage = ev.target.result;
+        if (postImageUrlInput) postImageUrlInput.value = "";
+        showPostImagePreview(tempPostImage);
+        showAdminToast("📷 Cover picture loaded — click Add/Save to publish!");
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (removePostImageBtn) removePostImageBtn.addEventListener("click", () => {
+    clearPostImagePreview();
+    if (postImageUrlInput) postImageUrlInput.value = "";
+  });
+
+  if (postVideoDropzone && postVideoFile) {
+    postVideoDropzone.addEventListener("click", () => postVideoFile.click());
+    postVideoFile.addEventListener("change", () => {
+      const file = postVideoFile.files[0];
+      if (!file) return;
+      if (file.size > 12 * 1024 * 1024) {
+        showAdminToast("⚠️ Video over 12MB may exceed browser storage. Try a shorter clip or paste a link instead.");
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        tempPostVideo = ev.target.result;
+        tempPostVideoName = file.name;
+        if (postVideoUrlInput) postVideoUrlInput.value = "";
+        showPostVideoName(file.name);
+        showAdminToast("🎬 Video loaded — click Add/Save to publish!");
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (postsListEl) {
+    postsListEl.addEventListener("click", (e) => {
+      const editBtn = e.target.closest("[data-post-edit]");
+      const delBtn = e.target.closest("[data-post-del]");
+      const posts = loadFounderPosts();
+      if (editBtn) {
+        const item = posts.find(p => p.id === editBtn.dataset.postEdit);
+        if (!item) return;
+        postEditId.value = item.id;
+        postFormatInput.value = item.type || "blog";
+        postCategoryInput.value = item.category || "";
+        postTitleInput.value = item.title || "";
+        postContentInput.value = item.content || "";
+        if ((item.image || "").startsWith("data:")) {
+          tempPostImage = item.image;
+          if (postImageUrlInput) postImageUrlInput.value = "";
+          showPostImagePreview(item.image);
+        } else {
+          clearPostImagePreview();
+          if (postImageUrlInput) postImageUrlInput.value = item.image || "";
+        }
+        if ((item.videoUrl || "").startsWith("data:")) {
+          tempPostVideo = item.videoUrl;
+          tempPostVideoName = "attached video";
+          if (postVideoUrlInput) postVideoUrlInput.value = "";
+          showPostVideoName("attached video (kept — upload a new file to replace)");
+        } else {
+          tempPostVideo = null;
+          tempPostVideoName = "";
+          showPostVideoName("");
+          if (postVideoUrlInput) postVideoUrlInput.value = item.videoUrl || "";
+        }
+        postFormTitle.textContent = "Edit Post";
+        postSaveBtn.textContent = "Save Post";
+        postCancelBtn.style.display = "inline-flex";
+        postForm.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      if (delBtn) {
+        if (!confirm("Delete this post?")) return;
+        saveFounderPosts(posts.filter(p => p.id !== delBtn.dataset.postDel));
+        if (postEditId.value === delBtn.dataset.postDel) resetPostForm();
+        renderPostsAdmin();
+        showAdminToast("Post deleted.");
+      }
+    });
+  }
+
+  if (postCancelBtn) postCancelBtn.addEventListener("click", resetPostForm);
+
+  const resetPostsBtn = document.getElementById("resetPostsBtn");
+  if (resetPostsBtn) resetPostsBtn.addEventListener("click", () => {
+    if (!confirm("Reset blogs/vlogs to default?")) return;
+    saveFounderPosts([...DEFAULT_FOUNDER_POSTS_ADMIN]);
+    resetPostForm();
+    renderPostsAdmin();
+    showAdminToast("Default posts restored.");
+  });
+
+  if (postForm) postForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = postTitleInput.value.trim();
+    const content = postContentInput.value.trim();
+    if (!title || !content) {
+      showAdminToast("Title and story are required.");
+      return;
+    }
+    const profile = loadProfile();
+    const posts = loadFounderPosts();
+    const image = tempPostImage || postImageUrlInput.value.trim() || "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80";
+    const videoUrl = tempPostVideo || postVideoUrlInput.value.trim();
+    const data = {
+      type: postFormatInput.value,
+      title,
+      category: postCategoryInput.value.trim() || "General",
+      content,
+      excerpt: content.slice(0, 130) + (content.length > 130 ? "..." : ""),
+      image,
+      videoUrl: videoUrl || ""
+    };
+    try {
+      if (postEditId.value) {
+        const idx = posts.findIndex(p => p.id === postEditId.value);
+        if (idx > -1) posts[idx] = { ...posts[idx], ...data };
+        showAdminToast("✅ Post updated! Check Diyavasu's Corner.");
+      } else {
+        posts.unshift({
+          id: "f-" + Date.now(),
+          date: "Today",
+          readTime: data.type === "vlog" ? "3 min watch" : "3 min read",
+          author: profile.name || "Diyavasu Gubbi Ravi Sandesh",
+          authorAvatar: profile.avatar || "",
+          ...data
+        });
+        showAdminToast("✅ Post published to Diyavasu's Corner!");
+      }
+      saveFounderPosts(posts);
+    } catch (err) {
+      showAdminToast("⚠️ Could not save — video/picture too large for browser storage. Try smaller files or URLs.");
+      return;
+    }
+    resetPostForm();
+    renderPostsAdmin();
+  });
+
+  // ---------------- Student Hub (community) edit / delete ----------------
+  const communityListEl = document.getElementById("communityAdminList");
+  const communityEditForm = document.getElementById("communityEditForm");
+  const communityEditId = document.getElementById("communityEditId");
+  const communityEditTitle = document.getElementById("communityEditTitle");
+  const communityEditCategory = document.getElementById("communityEditCategory");
+  const communityEditText = document.getElementById("communityEditText");
+
+  function renderCommunityAdmin() {
+    if (!communityListEl) return;
+    const posts = loadCommunityPosts();
+    if (posts.length === 0) {
+      communityListEl.innerHTML = `<p class="admin-hint">No student posts stored in this browser yet. Visit the homepage Student Hub to add one, or reset below to load samples.</p>`;
+      return;
+    }
+    communityListEl.innerHTML = posts.map(p => `
+      <div class="admin-list-item">
+        <div class="admin-list-info">
+          <strong>${escapeAdminHtml(p.title)}</strong>
+          <span class="admin-list-meta">${escapeAdminHtml(p.author || "")} • ${escapeAdminHtml(CATEGORY_LABELS_ADMIN[p.category] || p.category || "")}</span>
+          <span class="admin-list-desc">${escapeAdminHtml((p.text || "").slice(0, 120))}</span>
+        </div>
+        <div class="admin-list-actions">
+          <button type="button" class="btn btn-secondary btn-sm" data-comm-edit="${p.id}">Edit</button>
+          <button type="button" class="btn btn-secondary btn-sm admin-danger" data-comm-del="${p.id}">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  if (communityListEl) {
+    communityListEl.addEventListener("click", (e) => {
+      const editBtn = e.target.closest("[data-comm-edit]");
+      const delBtn = e.target.closest("[data-comm-del]");
+      const posts = loadCommunityPosts();
+      if (editBtn) {
+        const item = posts.find(p => p.id === editBtn.dataset.commEdit);
+        if (!item) return;
+        communityEditId.value = item.id;
+        communityEditTitle.value = item.title || "";
+        communityEditCategory.value = item.category || "drills";
+        communityEditText.value = item.text || "";
+        communityEditForm.style.display = "block";
+        communityEditForm.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      if (delBtn) {
+        if (!confirm("Delete this student post?")) return;
+        saveCommunityPosts(posts.filter(p => p.id !== delBtn.dataset.commDel));
+        renderCommunityAdmin();
+        showAdminToast("Student post deleted.");
+      }
+    });
+  }
+
+  const communityCancelBtn = document.getElementById("communityCancelEditBtn");
+  if (communityCancelBtn) communityCancelBtn.addEventListener("click", () => {
+    communityEditForm.style.display = "none";
+    communityEditId.value = "";
+  });
+
+  if (communityEditForm) communityEditForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const posts = loadCommunityPosts();
+    const idx = posts.findIndex(p => p.id === communityEditId.value);
+    if (idx === -1) return;
+    posts[idx] = {
+      ...posts[idx],
+      title: communityEditTitle.value.trim(),
+      category: communityEditCategory.value,
+      categoryLabel: CATEGORY_LABELS_ADMIN[communityEditCategory.value] || "Student Story",
+      text: communityEditText.value.trim()
+    };
+    saveCommunityPosts(posts);
+    communityEditForm.style.display = "none";
+    communityEditId.value = "";
+    renderCommunityAdmin();
+    showAdminToast("✅ Student post updated!");
+  });
+
+  const resetCommunityBtn = document.getElementById("resetCommunityBtn");
+  if (resetCommunityBtn) resetCommunityBtn.addEventListener("click", () => {
+    if (!confirm("Clear stored Student Hub posts? Homepage will reload samples on next visit.")) return;
+    localStorage.removeItem(COMMUNITY_POSTS_KEY);
+    if (communityEditForm) communityEditForm.style.display = "none";
+    renderCommunityAdmin();
+    showAdminToast("Student Hub storage cleared.");
+  });
+
   // If session already unlocked (auto-unlock path ran before handlers), render lists now
   if (sessionStorage.getItem("pulse_admin_unlocked") === "1") {
     renderProjectsAdmin();
     renderTeamAdmin();
+    renderPostsAdmin();
+    renderCommunityAdmin();
   }
 });
 

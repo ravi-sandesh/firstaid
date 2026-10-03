@@ -915,7 +915,17 @@
 
           <div class="form-group" id="videoUrlGroup">
             <label class="form-label" for="founderVideoUrl">Video URL (Optional for Vlogs)</label>
-            <input type="url" id="founderVideoUrl" class="form-input" placeholder="e.g. YouTube or MP4 link">
+            <input type="url" id="founderVideoUrl" class="form-input" placeholder="e.g. YouTube embed or MP4 link">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Upload Video File (Optional)</label>
+            <div class="file-upload-dropzone" id="founderVideoDropzone">
+              <p style="font-size:0.85rem; font-weight:700; color:var(--slate-800);">Click to upload an MP4 / WebM clip</p>
+              <p style="font-size:0.75rem; color:var(--slate-500);">Keep under ~10MB for browser storage</p>
+              <input type="file" id="founderVideoFile" accept="video/*" style="display:none;">
+            </div>
+            <p class="admin-hint" id="founderVideoName" style="display:none;"></p>
           </div>
 
           <div class="form-group">

@@ -14,6 +14,7 @@
     .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.5rem; }
     #adminPanel { display: none; }
     #adminPanel.unlocked { display: block; }
+    #projectsAdminCard, #teamAdminCard, #postsAdminCard, #communityAdminCard { display: none; }
   </style>
 </head>
 <body>
@@ -106,6 +107,115 @@
           <button type="button" class="btn btn-secondary btn-sm" id="lockBtn">Lock</button>
         </div>
       </form>
+    </div>
+
+    <!-- Blogs / Vlogs manager (Diyavasu's Corner) -->
+    <div class="admin-card" id="postsAdminCard">
+      <span class="section-subtitle">ADMIN • BLOGS & VLOGS</span>
+      <h2 class="section-title" style="font-size:1.5rem; margin-bottom:0.25rem;">Manage Blogs / Vlogs / Projects</h2>
+      <p class="admin-hint" style="margin-bottom:1.25rem;">Add, edit or delete any post in “Diyavasu's Corner”. Upload cover pictures and videos (MP4) or paste a YouTube embed / video link. Saved in this browser (localStorage key <code>pulse_founder_posts</code>).</p>
+
+      <div id="postsAdminList" class="admin-list"></div>
+
+      <form id="postForm" style="margin-top:1.25rem; border-top:1px dashed var(--slate-200); padding-top:1.25rem;">
+        <input type="hidden" id="postEditId" value="">
+        <h3 style="font-family:var(--font-heading); font-size:1.05rem; margin-bottom:0.75rem;" id="postFormTitle">Add New Blog / Vlog</h3>
+        <div class="form-group-grid">
+          <div class="form-group">
+            <label class="form-label" for="postFormat">Format *</label>
+            <select id="postFormat" class="form-select" required>
+              <option value="blog">Blog / Article</option>
+              <option value="vlog">Video Vlog</option>
+              <option value="project">Project Update</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="postCategory">Category / Tag</label>
+            <input type="text" id="postCategory" class="form-input" placeholder="e.g. CPR Training">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="postTitle">Title *</label>
+          <input type="text" id="postTitle" class="form-input" placeholder="e.g. CPR Bootcamp: What We Learned" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="postImageUrl">Cover Picture URL</label>
+          <input type="url" id="postImageUrl" class="form-input" placeholder="https://... or upload below">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Cover Picture</label>
+          <div class="file-upload-dropzone" id="postImageDropzone">
+            <p style="font-size:0.85rem; font-weight:700; color:var(--slate-800);">Click to upload a picture</p>
+            <p style="font-size:0.75rem; color:var(--slate-500);">PNG, JPG, WebP — stored in browser</p>
+            <input type="file" id="postImageFile" accept="image/*" style="display:none;">
+          </div>
+          <div class="preview-container" id="postImagePreviewContainer">
+            <img id="postImagePreviewImg" src="" alt="Post cover preview">
+            <button type="button" class="remove-media-btn" id="removePostImageBtn">&times;</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="postVideoUrl">Video URL (YouTube embed or MP4 link)</label>
+          <input type="url" id="postVideoUrl" class="form-input" placeholder="e.g. https://www.youtube.com/embed/XXXX or https://.../clip.mp4">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Video (MP4, small clips)</label>
+          <div class="file-upload-dropzone" id="postVideoDropzone">
+            <p style="font-size:0.85rem; font-weight:700; color:var(--slate-800);">Click to upload a video file</p>
+            <p style="font-size:0.75rem; color:var(--slate-500);">MP4 / WebM — keep under ~10MB for browser storage</p>
+            <input type="file" id="postVideoFile" accept="video/*" style="display:none;">
+          </div>
+          <p class="admin-hint" id="postVideoName" style="display:none;"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="postContent">Story & Details *</label>
+          <textarea id="postContent" class="form-textarea" rows="5" placeholder="Share what happened, key takeaways, skills practiced..." required></textarea>
+        </div>
+        <div class="admin-actions">
+          <button type="submit" class="btn btn-primary btn-sm" id="postSaveBtn">Add Post</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="postCancelEditBtn" style="display:none;">Cancel Edit</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="resetPostsBtn">Reset to Default Posts</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Community posts manager -->
+    <div class="admin-card" id="communityAdminCard">
+      <span class="section-subtitle">ADMIN • STUDENT HUB</span>
+      <h2 class="section-title" style="font-size:1.5rem; margin-bottom:0.25rem;">Manage Student Hub Posts</h2>
+      <p class="admin-hint" style="margin-bottom:1.25rem;">Edit or delete any Student Hub story / vlog. New posts are added on the homepage; edits here appear instantly (localStorage key <code>pulse_community_posts</code>).</p>
+
+      <div id="communityAdminList" class="admin-list"></div>
+
+      <form id="communityEditForm" style="margin-top:1.25rem; border-top:1px dashed var(--slate-200); padding-top:1.25rem; display:none;">
+        <input type="hidden" id="communityEditId" value="">
+        <h3 style="font-family:var(--font-heading); font-size:1.05rem; margin-bottom:0.75rem;">Edit Student Post</h3>
+        <div class="form-group">
+          <label class="form-label" for="communityEditTitle">Post Title *</label>
+          <input type="text" id="communityEditTitle" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="communityEditCategory">Category</label>
+          <select id="communityEditCategory" class="form-select">
+            <option value="drills">Training Drills</option>
+            <option value="certifications">Certification Celebration</option>
+            <option value="vlogs">Student Vlog</option>
+            <option value="tips">First Aid Tips</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="communityEditText">Story / Text *</label>
+          <textarea id="communityEditText" class="form-textarea" rows="4" required></textarea>
+        </div>
+        <div class="admin-actions">
+          <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="communityCancelEditBtn">Cancel</button>
+        </div>
+      </form>
+      <div class="admin-actions">
+        <button type="button" class="btn btn-secondary btn-sm" id="resetCommunityBtn">Reset Student Hub to Default</button>
+        <a href="index.html#community-hub" class="btn btn-teal btn-sm">View Student Hub</a>
+      </div>
     </div>
 
     <!-- Prospective Projects manager -->

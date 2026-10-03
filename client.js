@@ -284,7 +284,36 @@ let isMetronomeRunning = false;
 
 // Media Upload Temp Storage
 let tempFounderPhoto = null;
+let tempFounderVideo = null;
+let editingFounderPostId = null;
 let tempCommMedia = null;
+
+function isAdminUnlocked() {
+  try {
+    return typeof sessionStorage !== "undefined" && sessionStorage.getItem("pulse_admin_unlocked") === "1";
+  } catch {
+    return false;
+  }
+}
+
+// Resolve playable video: YouTube embed, uploaded data: video, or direct mp4/webm link.
+// Returns { kind: 'youtube'|'file', src } or null. File URLs are rendered in a <video>
+// tag (never an iframe) and only http(s)/data: sources are allowed.
+function resolvePlayableVideo(url) {
+  if (typeof url !== "string") return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (/^https:\/\/(www\.)?youtube\.com\/embed\/[A-Za-z0-9_-]+$/.test(trimmed)) {
+    return { kind: "youtube", src: trimmed };
+  }
+  if (/^data:video\/[a-z0-9.+-]+;base64,/.test(trimmed)) {
+    return { kind: "file", src: trimmed };
+  }
+  if (/^https:\/\/[^"'\s<>]+\.(mp4|webm|ogg)(\?[^"'\s<>]*)?$/i.test(trimmed)) {
+    return { kind: "file", src: trimmed };
+  }
+  return null;
+}
 
 // ==========================================================================
 // Initialization & LocalStorage
@@ -426,12 +455,19 @@ function renderFounderPosts() {
     card.className = "post-card";
 
     const typeBadge = post.type === "vlog" ? "🎥 Vlog" : post.type === "project" ? "🛠️ Project" : "📝 Blog";
+    const hasVideo = !!(post.videoUrl && String(post.videoUrl).trim());
+    const adminControls = isAdminUnlocked() ? `
+        <div style="display:flex; gap:8px; padding:0 1.5rem 1rem;">
+          <button class="btn btn-secondary btn-sm" onclick="editFounderPost('${post.id}')">Edit</button>
+          <button class="btn btn-secondary btn-sm" onclick="deleteFounderPost('${post.id}')" style="color:var(--primary); border-color:#FECACA;">Delete</button>
+        </div>
+      ` : "";
 
     card.innerHTML = `
       <div class="post-media">
         <span class="post-type-tag">${typeBadge}</span>
         <img src="${post.image}" alt="${escapeHtml(post.title)}" loading="lazy">
-        ${post.type === "vlog" ? `
+        ${hasVideo ? `
           <div class="video-play-overlay" onclick="openArticleModal('${post.id}')" title="Play Video">
             <div class="play-circle">▶</div>
           </div>
@@ -457,6 +493,7 @@ function renderFounderPosts() {
           </button>
         </div>
       </div>
+      ${adminControls}
     `;
 
     container.appendChild(card);
@@ -608,6 +645,7 @@ function renderCommunityPosts() {
             <span>${post.likes || 0}</span>
           </button>
           <span class="badge badge-teal" style="font-size:0.7rem;">Verified Student</span>
+          ${isAdminUnlocked() ? `<button class="btn btn-secondary btn-sm" onclick="deleteCommunityPost('${post.id}')" style="color:var(--primary); border-color:#FECACA;">Delete</button>` : ''}
         </div>
       </div>
     `;
@@ -857,6 +895,9 @@ function setupModals() {
   const founderPreviewImg = document.getElementById("founderPreviewImg");
   const removeFounderMediaBtn = document.getElementById("removeFounderMediaBtn");
   const founderForm = document.getElementById("founderPostForm");
+  const founderVideoDropzone = document.getElementById("founderVideoDropzone");
+  const founderVideoFile = document.getElementById("founderVideoFile");
+  const founderVideoName = document.getElementById("founderVideoName");
 
   if (openFounderBtn && founderModal) {
     openFounderBtn.addEventListener("click", () => founderModal.classList.add("active"));
@@ -880,6 +921,44 @@ function setupModals() {
     });
   }
 
+  if (founderVideoDropzone && founderVideoFile) {
+    founderVideoDropzone.addEventListener("click", () => founderVideoFile.click());
+    founderVideoFile.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 12 * 1024 * 1024) {
+        showToast("⚠️ Video over 12MB may exceed browser storage. Try a shorter clip or paste a link instead.", true);
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        tempFounderVideo = event.target.result;
+        const urlInput = document.getElementById("founderVideoUrl");
+        if (urlInput) urlInput.value = "";
+        if (founderVideoName) {
+          founderVideoName.textContent = "📹 Attached: " + file.name;
+          founderVideoName.style.display = "block";
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function resetFounderModal() {
+    founderForm.reset();
+    tempFounderPhoto = null;
+    tempFounderVideo = null;
+    editingFounderPostId = null;
+    founderPreviewContainer.style.display = "none";
+    founderDropzone.style.display = "block";
+    if (founderVideoFile) founderVideoFile.value = "";
+    if (founderVideoName) {
+      founderVideoName.textContent = "";
+      founderVideoName.style.display = "none";
+    }
+    const submitBtn = founderForm.querySelector("button[type='submit']");
+    if (submitBtn) submitBtn.textContent = "Publish to Diyavasu's Corner";
+  }
+
   if (removeFounderMediaBtn) {
     removeFounderMediaBtn.addEventListener("click", () => {
       tempFounderPhoto = null;
@@ -897,35 +976,58 @@ function setupModals() {
       const tag = document.getElementById("founderPostTag").value.trim() || "Project";
       const type = document.getElementById("postType").value;
       const content = document.getElementById("founderPostContent").value.trim();
-      const videoUrl = document.getElementById("founderVideoUrl").value.trim();
+      const urlInput = document.getElementById("founderVideoUrl");
+      const videoUrl = (tempFounderVideo || (urlInput && urlInput.value.trim()) || "");
+
+      if (!title || !content) {
+        showToast("Title and story are required.", true);
+        return;
+      }
 
       const profile = getFounderProfile();
-      const newPost = {
-        id: "f-" + Date.now(),
-        type: type,
-        title: title,
-        category: tag,
-        date: "Today",
-        readTime: "3 min read",
-        author: profile.name,
-        authorAvatar: profile.avatar,
-        image: tempFounderPhoto || "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
-        videoUrl: videoUrl || "",
-        excerpt: content.slice(0, 130) + "...",
-        content: content
-      };
-
-      founderPosts.unshift(newPost);
-      saveStorage();
+      try {
+        if (editingFounderPostId) {
+          const idx = founderPosts.findIndex(p => p.id === editingFounderPostId);
+          if (idx > -1) {
+            founderPosts[idx] = {
+              ...founderPosts[idx],
+              type,
+              title,
+              category: tag,
+              content,
+              excerpt: content.slice(0, 130) + (content.length > 130 ? "..." : ""),
+              image: tempFounderPhoto || founderPosts[idx].image,
+              videoUrl
+            };
+          }
+          showToast("✅ Post updated!");
+        } else {
+          const newPost = {
+            id: "f-" + Date.now(),
+            type: type,
+            title: title,
+            category: tag,
+            date: "Today",
+            readTime: type === "vlog" ? "3 min watch" : "3 min read",
+            author: profile.name,
+            authorAvatar: profile.avatar,
+            image: tempFounderPhoto || "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
+            videoUrl,
+            excerpt: content.slice(0, 130) + (content.length > 130 ? "..." : ""),
+            content: content
+          };
+          founderPosts.unshift(newPost);
+          showToast("🎉 Post published to Diyavasu's Corner!");
+        }
+        saveStorage();
+      } catch (err) {
+        showToast("⚠️ Could not save — media too large for browser storage. Try smaller files or URLs.", true);
+        return;
+      }
       renderFounderPosts();
 
-      founderForm.reset();
-      tempFounderPhoto = null;
-      founderPreviewContainer.style.display = "none";
-      founderDropzone.style.display = "block";
+      resetFounderModal();
       founderModal.classList.remove("active");
-
-      showToast("🎉 Post published to Diyavasu's Corner!");
     });
   }
 
@@ -1047,6 +1149,74 @@ function setupModals() {
 
 // Function to view full article / vlog modal
 if (typeof window !== "undefined") {
+window.editFounderPost = function(postId) {
+  if (!isAdminUnlocked()) {
+    showToast("🔒 Admin / Diyavasu only — unlock via the Admin page first.", true);
+    return;
+  }
+  const post = founderPosts.find(p => p.id === postId);
+  if (!post) return;
+  editingFounderPostId = postId;
+  document.getElementById("postType").value = post.type || "blog";
+  document.getElementById("founderPostTitle").value = post.title || "";
+  document.getElementById("founderPostTag").value = post.category || "";
+  document.getElementById("founderPostContent").value = post.content || "";
+  const urlInput = document.getElementById("founderVideoUrl");
+  if ((post.videoUrl || "").startsWith("data:")) {
+    tempFounderVideo = post.videoUrl;
+    if (urlInput) urlInput.value = "";
+    const nameEl = document.getElementById("founderVideoName");
+    if (nameEl) {
+      nameEl.textContent = "📹 Attached video kept — upload a new file to replace";
+      nameEl.style.display = "block";
+    }
+  } else {
+    tempFounderVideo = null;
+    if (urlInput) urlInput.value = post.videoUrl || "";
+  }
+  if ((post.image || "").startsWith("data:")) {
+    tempFounderPhoto = post.image;
+  } else {
+    tempFounderPhoto = null;
+  }
+  const previewImg = document.getElementById("founderPreviewImg");
+  const previewContainer = document.getElementById("founderPreviewContainer");
+  const dropzone = document.getElementById("founderDropzone");
+  if (previewImg && previewContainer && dropzone) {
+    previewImg.src = post.image || "";
+    previewContainer.style.display = "block";
+    dropzone.style.display = "none";
+  }
+  const form = document.getElementById("founderPostForm");
+  const submitBtn = form && form.querySelector("button[type='submit']");
+  if (submitBtn) submitBtn.textContent = "Save Changes";
+  document.getElementById("founderPostModal").classList.add("active");
+};
+
+window.deleteFounderPost = function(postId) {
+  if (!isAdminUnlocked()) {
+    showToast("🔒 Admin / Diyavasu only — unlock via the Admin page first.", true);
+    return;
+  }
+  if (!confirm("Delete this post?")) return;
+  founderPosts = founderPosts.filter(p => p.id !== postId);
+  saveStorage();
+  renderFounderPosts();
+  showToast("Post deleted.");
+};
+
+window.deleteCommunityPost = function(postId) {
+  if (!isAdminUnlocked()) {
+    showToast("🔒 Admin only — unlock via the Admin page first.", true);
+    return;
+  }
+  if (!confirm("Delete this student post?")) return;
+  communityPosts = communityPosts.filter(p => p.id !== postId);
+  saveStorage();
+  renderCommunityPosts();
+  showToast("Student post deleted.");
+};
+
 window.openArticleModal = function(postId) {
   const post = founderPosts.find(p => p.id === postId);
   if (!post) return;
@@ -1065,17 +1235,21 @@ window.openArticleModal = function(postId) {
   author.innerText = post.author;
   date.innerText = `${post.date} • ${post.readTime}`;
 
-  // Video embed vs image (only allow http(s) YouTube embeds to avoid XSS via videoUrl)
-  const safeVideoUrl = typeof post.videoUrl === "string" && /^https:\/\/(www\.)?youtube\.com\/embed\/[A-Za-z0-9_-]+$/.test(post.videoUrl.trim())
-    ? post.videoUrl.trim()
-    : "";
-  if (safeVideoUrl) {
+  // Video embed vs image (YouTube embeds play in iframe; uploaded MP4/data: plays in <video>)
+  const playable = resolvePlayableVideo(post.videoUrl);
+  if (playable && playable.kind === "youtube") {
     img.style.display = "none";
     videoWrap.style.display = "block";
     videoWrap.innerHTML = `
       <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px;">
-        <iframe src="${escapeHtml(safeVideoUrl)}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe>
+        <iframe src="${escapeHtml(playable.src)}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe>
       </div>
+    `;
+  } else if (playable && playable.kind === "file") {
+    img.style.display = "none";
+    videoWrap.style.display = "block";
+    videoWrap.innerHTML = `
+      <video src="${playable.src}" controls playsinline preload="metadata" style="width:100%; max-height:380px; border-radius:12px; background:#000;"></video>
     `;
   } else {
     videoWrap.style.display = "none";
